@@ -1,6 +1,7 @@
 import * as path from 'path'
+import getConfig from 'next/config'
 
-const fontsDir = path.join('public', 'jimp', 'fonts')
+const fontsDir = path.resolve('./fonts', 'jimp', 'fonts')
 
 const MONTSERRAT_WHITE_DIR = path.join(fontsDir, 'Montserrat', 'white')
 const MONTSERRAT_BLACK_DIR = path.join(fontsDir, 'Montserrat', 'black')

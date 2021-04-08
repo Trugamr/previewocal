@@ -1,16 +1,21 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import nc from 'next-connect'
 import Jimp from 'jimp'
-import { Montserrat } from '../../../../utils/fonts'
+import spotify from '../../../../spotify'
+import { Montserrat } from '../../../../fonts'
 
-const createSpotifyPreview = async (): Promise<Buffer> => {
-  const data = {
-    name: 'Tokyo',
-    albumName: 'Universe of the Past',
-    artists: ['LXST CXNTURY'],
-    image: 'https://i.scdn.co/image/ab67616d0000b273d7859b708f662c3018f213b8',
-  }
+interface SpotifyPreviewData {
+  image: string
+  title: string
+  subtitle: string
+}
 
+/**
+ * Create image and return buffer from provided data
+ */
+const createSpotifyPreview = async (
+  data: SpotifyPreviewData,
+): Promise<Buffer> => {
   const imageSize = 512
   const padding = 25
   const spacing = 8
@@ -29,7 +34,7 @@ const createSpotifyPreview = async (): Promise<Buffer> => {
   // Title
   let font = await Jimp.loadFont(Montserrat.WHITE.MEDIUM[24])
   const title = {
-    text: data.name.replace(/(.{30})..+/, '$1...'),
+    text: data.title.replace(/(.{30})..+/, '$1...'),
     font,
     x: padding,
     y: padding + artworkSize + spacing,
@@ -39,7 +44,7 @@ const createSpotifyPreview = async (): Promise<Buffer> => {
   // Subtitle
   font = await Jimp.loadFont(Montserrat.WHITE.MEDIUM[18])
   const subtitle = {
-    text: data.artists.join(', ').replace(/(.{40})..+/, '$1...'),
+    text: data.subtitle.replace(/(.{40})..+/, '$1...'),
     font,
     x: padding,
     y:
@@ -54,7 +59,18 @@ const createSpotifyPreview = async (): Promise<Buffer> => {
 }
 
 const handler = nc<NextApiRequest, NextApiResponse>().get(async (req, res) => {
-  const buffer = await createSpotifyPreview()
+  const trackId = req.query.id as string
+  const trackData = await spotify.getTrackDetails(trackId)
+  const image = trackData.album.images[0].url
+
+  const data = {
+    title: trackData.name,
+    albumName: trackData.album,
+    subtitle: trackData.artists.map(artist => artist.name).join(', '),
+    image,
+  }
+
+  const buffer = await createSpotifyPreview(data)
 
   // Let client know it's a JPEG
   res.setHeader('Cache-Control', 'private')
