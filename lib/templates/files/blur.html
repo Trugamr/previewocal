@@ -1,0 +1,96 @@
+<!-- 
+  ANIME
+  JOY.
+  https://i.scdn.co/image/ab67616d0000b2733385fcb5234eb2a4d4a79f8d
+ -->
+
+<!-- 
+  Två Systrar
+  Garmarna
+  https://i.scdn.co/image/ab67616d0000b273b7f1aa8cd57403c67f6a5d65
+ -->
+
+<html>
+  <head>
+    <style>
+      :root {
+        --size: 512px;
+        --padding: 25px;
+        --artwork: url('https://i.scdn.co/image/ab67616d0000b2733385fcb5234eb2a4d4a79f8d');
+        --artwork-relative-scale: 0.7;
+        --title-color: white;
+        --title-size: 32px;
+        --sub-title-color: rgba(255, 255, 255, 0.9);
+        --sub-title-size: 24px;
+        --spacing: 8px;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+      }
+
+      html,
+      body {
+        width: var(--size);
+        height: var(--size);
+        overflow: hidden;
+      }
+
+      .container {
+        width: 100%;
+        height: 100%;
+        position: relative;
+        background-size: cover;
+        background-image: var(--artwork);
+      }
+
+      .container::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        -webkit-backdrop-filter: blur(10px) brightness(0.75);
+        backdrop-filter: blur(10px) brightness(0.75);
+        pointer-events: none;
+      }
+
+      .wrapper {
+        padding: 25px;
+        position: absolute;
+        height: 100%;
+        width: 100%;
+      }
+
+      .artwork {
+        width: calc(var(--artwork-relative-scale) * var(--size));
+        height: calc(var(--artwork-relative-scale) * var(--size));
+        background-size: cover;
+        background-image: var(--artwork);
+        margin-bottom: var(--spacing);
+      }
+
+      .title {
+        font-family: 'Montserrat, sans-serif';
+        font-size: var(--title-size);
+        color: var(--title-color);
+        margin-bottom: var(--spacing);
+      }
+
+      .sub-title {
+        font-family: 'Montserrat, sans-serif';
+        font-size: var(--sub-title-size);
+        color: var(--sub-title-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="wrapper">
+        <div class="artwork"></div>
+        <p class="title">ANIME</p>
+        <p class="sub-title">JOY.</p>
+      </div>
+    </div>
+  </body>
+</html>
