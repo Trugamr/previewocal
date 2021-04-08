@@ -4,7 +4,7 @@ export const Blur: Template = {
     padding: 25,
     artwork: {
       url: 'https://i.scdn.co/image/ab67616d0000b2733385fcb5234eb2a4d4a79f8d',
-      scale: 0.7,
+      scale: 0.72,
     },
     title: {
       text: 'ANIME',
@@ -33,7 +33,7 @@ export const Blur: Template = {
         --subtitle-size: $(subtitle.size);
         --spacing: $(spacing); 
       }
-  
+
       * {
         margin: 0;
         padding: 0;
@@ -44,6 +44,7 @@ export const Blur: Template = {
         width: var(--size);
         height: var(--size);
         overflow: hidden;
+        font-family: 'Montserrat, sans-serif';
       }
   
       .container {
@@ -68,8 +69,8 @@ export const Blur: Template = {
       .wrapper {
         padding: 25px;
         position: absolute;
-        height: 100%;
-        width: 100%;
+        height: calc(100% - 2 * var(--padding));
+        width: calc(100% - 2 * var(--padding));
       }
   
       .artwork {
@@ -78,6 +79,13 @@ export const Blur: Template = {
         background-size: cover;
         background-image: var(--artwork);
         margin-bottom: var(--spacing);
+      }
+
+      .title, .subtitle {
+        width: 75%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
   
       .title {
@@ -91,6 +99,7 @@ export const Blur: Template = {
         font-family: 'Montserrat, sans-serif';
         font-size: var(--subtitle-size);
         color: var(--subtitle-color);
+        width: 60%;
       }
     </style>
   </head>

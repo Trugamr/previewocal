@@ -27,7 +27,7 @@ export const generateImage = async (
   const { template, values } = options
 
   const browser = await chromium.launch({
-    headless: true,
+    headless: false,
   })
 
   const page = await browser.newPage()
@@ -45,7 +45,7 @@ export const generateImage = async (
     image = await page.screenshot(screenshotOptions)
   }
 
-  await browser.close()
+  // await browser.close()
 
   return image
 }
