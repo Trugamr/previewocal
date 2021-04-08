@@ -1,6 +1,6 @@
 import { Blur } from './files/blur'
 import { flatten, replaceTokens } from './utils'
-import lodash, { merge } from 'lodash'
+import lodash from 'lodash'
 import { chromium } from 'playwright'
 
 const screenshotOptions: ScreenshotOptions = {
@@ -10,7 +10,7 @@ const screenshotOptions: ScreenshotOptions = {
 }
 
 export const generateHTML = (template: Template, values: Object) => {
-  const mergedValues = merge(template.default, values)
+  const mergedValues = lodash.merge(template.default, values)
   const flatObject = flatten(mergedValues)
   const html = replaceTokens(template.markup, flatObject)
   return html
