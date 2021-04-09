@@ -38,23 +38,47 @@ export const loadFont = async (font: Font): Promise<LoadedFont> => {
   }
 }
 
-export interface Font {
+export interface Font<W = number> {
   path: string
-  weight: number
+  weight: W
   familyName: string
 }
 
 interface FontFamily {
   familyName: string
-  Normal: Font
+  Light?: Font<300>
+  Normal?: Font<400>
+  Medium?: Font<500>
+  SemiBold?: Font<600>
+  Bold?: Font<700>
 }
 
 export const Montserrat: FontFamily = {
   familyName: 'Montserrat',
+  Light: {
+    familyName: 'Montserrat',
+    path: path.join(MONTSERRAT_DIR, 'Montserrat-Light.woff2'),
+    weight: 300,
+  },
   Normal: {
     familyName: 'Montserrat',
     path: path.join(MONTSERRAT_DIR, 'Montserrat-Normal.woff2'),
     weight: 400,
+  },
+  Medium: {
+    familyName: 'Montserrat',
+    path: path.join(MONTSERRAT_DIR, 'Montserrat-Medium.woff2'),
+    weight: 500,
+  },
+  SemiBold: {
+    familyName: 'Montserrat',
+    path: path.join(MONTSERRAT_DIR, 'Montserrat-SemiBold.woff2'),
+    weight: 600,
+  },
+  Bold: {
+    familyName: 'Montserrat',
+    path: path.join(MONTSERRAT_DIR, 'Montserrat-Bold.woff2'),
+    weight: 700,
   },
 }
 

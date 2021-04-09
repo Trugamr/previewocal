@@ -7,13 +7,6 @@ const screenshotOptions: ScreenshotOptions = {
   omitBackground: true,
 }
 
-// export const generateHTML = (template: any, values: Object) => {
-//   const mergedValues = lodash.merge(template.default, values)
-//   const flatObject = flatten(mergedValues)
-//   const html = replaceTokens(template.markup, flatObject)
-//   return html
-// }
-
 interface GenerateImageOptions {
   html: string
   elementToCapture?: string

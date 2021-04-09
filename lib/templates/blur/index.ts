@@ -33,7 +33,7 @@ const defaultOptions: BlurTemplateOptions = {
     customCss: '',
     size: 512,
     padding: 25,
-    spacing: 8,
+    spacing: 6,
     image: {
       scale: 0.72,
     },
@@ -42,11 +42,11 @@ const defaultOptions: BlurTemplateOptions = {
       size: 32,
     },
     subtitle: {
-      color: 'white',
-      size: 24,
+      color: 'rgba(255, 255, 255, 0.8)',
+      size: 22,
     },
   },
-  fonts: [Fonts.Montserrat.Normal],
+  fonts: [Fonts.Montserrat.Normal, Fonts.Montserrat.SemiBold],
 }
 
 const Blur = async (options: BlurTemplateOptions): Promise<string> => {
@@ -141,6 +141,7 @@ const Blur = async (options: BlurTemplateOptions): Promise<string> => {
           font-size: var(--title-size);
           color: var(--title-color);
           margin-bottom: var(--spacing);
+          font-weight: 600;
         }
     
         .subtitle {

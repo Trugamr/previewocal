@@ -1,3 +1,5 @@
+import lodash from 'lodash'
+
 /**
  * Flatten object to a single level
  * ex. { a: { b: 2 }, c: 3 } -> { 'a.b': 2, c: 3 }
@@ -38,4 +40,11 @@ export const replaceTokens = (markup: string, values: Object) => {
     re.lastIndex = 0
   }
   return markup
+}
+
+export const generateHTML = (template: any, values: Object) => {
+  const mergedValues = lodash.merge(template.default, values)
+  const flatObject = flatten(mergedValues)
+  const html = replaceTokens(template.markup, flatObject)
+  return html
 }
