@@ -1,9 +1,7 @@
 import { NextApiRequest, NextApiResponse } from 'next'
 import nc from 'next-connect'
-import Jimp from 'jimp'
 import spotify from '../../../../../lib/spotify'
-import { generateImage } from '../../../../../lib/templates'
-import { Blur } from '../../../../../lib/templates/files/blur'
+import Templates, { generateImage } from '../../../../../lib/templates'
 
 const handler = nc<NextApiRequest, NextApiResponse>().get(async (req, res) => {
   // Let client know it's a JPEG
@@ -15,15 +13,13 @@ const handler = nc<NextApiRequest, NextApiResponse>().get(async (req, res) => {
   const trackData = await spotify.getTrackDetails(trackId)
 
   const data = {
-    artwork: { url: trackData.album.images[0].url },
-    title: { text: trackData.name },
-    subtitle: { text: trackData.artists.map(artist => artist.name).join(', ') },
+    image: trackData.album.images[0].url,
+    title: trackData.name,
+    subtitle: trackData.artists.map(artist => artist.name).join(', '),
   }
 
-  const buffer = await generateImage({
-    template: Blur,
-    values: data,
-  })
+  const html = await Templates.Blur(data)
+  const buffer = await generateImage({ html })
 
   // Send image buffer
   res.send(buffer)

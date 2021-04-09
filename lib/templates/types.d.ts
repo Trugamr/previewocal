@@ -5,8 +5,3 @@ declare interface ScreenshotOptions {
   timeout?: number
   type?: 'png' | 'jpeg'
 }
-
-declare interface Template {
-  default: Object
-  markup: string
-}
