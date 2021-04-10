@@ -55,6 +55,7 @@ const _generateGenericImage: GenerateGenericImage = async ({
 
   await browser.close()
 
+  console.timeEnd('done')
   return image
 }
 
@@ -84,12 +85,26 @@ export const generateSpotifyTrackImage = async ({
 
     await page.$eval(
       ':root',
-      (root, { image, title, subtitle }) => {
-        root.style.setProperty('--title', `"${title}"`)
-        root.style.setProperty('--subtitle', `"${subtitle}"`)
+      (root, image) => {
         root.style.setProperty('--image', `url(${image})`)
       },
-      options,
+      options.image,
+    )
+
+    await page.$eval(
+      '.title',
+      (element, title) => {
+        element.innerHTML = title
+      },
+      options.title,
+    )
+
+    await page.$eval(
+      '.subtitle',
+      (element, subtitle) => {
+        element.innerText = subtitle
+      },
+      options.subtitle,
     )
   }
 
