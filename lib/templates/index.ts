@@ -1,5 +1,5 @@
-import { chromium } from 'playwright'
 import axios from 'axios'
+import { Browser } from 'puppeteer'
 import {
   GenerateGenericImage,
   PageEvaluator,
@@ -12,23 +12,49 @@ const Blur: SpotifyTrackTemplate = {
   type: 'spotify-track',
 }
 
+const getBrowser = async (): Promise<Browser> => {
+  if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
+    // running on the Vercel platform.
+    const chromium = require('chrome-aws-lambda')
+    const browser: Promise<Browser> = chromium.puppeteer.launch({
+      args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath,
+      headless: chromium.headless,
+      ignoreHTTPSErrors: true,
+    })
+    return browser
+  } else {
+    // running locally.
+    const puppeteer = require('puppeteer')
+    const browser: Promise<Browser> = puppeteer.launch({
+      headless: true,
+    })
+    return browser
+  }
+}
+
 const _generateGenericImage: GenerateGenericImage = async ({
   evaluator,
   url,
 }) => {
-  const browser = await chromium.launch({ headless: true })
-  const context = await browser.newContext()
-  const page = await context.newPage()
+  console.time('done')
+
+  const browser = await getBrowser()
+
+  const page = await browser.newPage()
   await page.goto(url)
 
-  if (evaluator) await evaluator(page, context)
+  if (evaluator) await evaluator(page)
 
   const element = await page.$('.container')
   let image: Buffer
-  if (element) image = await element.screenshot()
-  else image = await page.screenshot()
+
+  if (element) image = (await element.screenshot({})) as Buffer
+  else image = (await page.screenshot()) as Buffer
 
   await browser.close()
+
   return image
 }
 

@@ -34,7 +34,7 @@ type GenerateImageOptions = {
 
 type GenerateImage = (options: GenerateImageOptions) => Promise<Buffer>
 
-type PageEvaluator = (page: Page, context: BrowserContext) => Promise<void>
+type PageEvaluator = (page: Page) => Promise<void>
 
 type GenerateGenericImage = (options: {
   evaluator?: PageEvaluator
