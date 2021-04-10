@@ -1,31 +1,11 @@
 import axios from 'axios'
-import { NextApiRequest, NextApiResponse } from 'next'
-import absoluteUrl from 'next-absolute-url'
-import nc, { Middleware } from 'next-connect'
+import { NextApiResponse } from 'next'
+import nc from 'next-connect'
 import Templates, { generateSpotifyTrackImage } from '../../../../lib/templates'
-
-interface ExtendedNextApiRequest extends NextApiRequest {
-  protocol: string
-  host: string
-  origin: string
-}
-
-const injectOrigin: Middleware<ExtendedNextApiRequest, NextApiResponse> = (
-  req,
-  res,
-  next,
-) => {
-  const { protocol, host, origin } = absoluteUrl(req)
-
-  req.protocol = protocol
-  req.host = host
-  req.origin = origin
-
-  next()
-}
+import { ExtendedNextApiRequest, injectOrigin } from '../../../../utils/api'
 
 const handler = nc<ExtendedNextApiRequest, NextApiResponse>()
-  // .use(injectOrigin)
+  .use(injectOrigin)
   .get(async (req, res) => {
     const {
       data: { data: trackData },
@@ -55,7 +35,7 @@ const handler = nc<ExtendedNextApiRequest, NextApiResponse>()
     const buffer = await generateSpotifyTrackImage({
       template: Templates.Spotify.Track.Blur,
       options: {
-        host: absoluteUrl(req).host,
+        host: req.origin,
         ...data,
       },
     })
