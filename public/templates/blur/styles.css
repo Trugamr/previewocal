@@ -1,0 +1,105 @@
+:root {
+  --size: 512px;
+  --padding: 25px;
+  --image: url('/templates/blur/assets/offline.jpeg');
+  --image-relative-scale: 0.72;
+  --title: 'Error 🌊🌸';
+  --title-color: white;
+  --title-size: 32px;
+  --subtitle: 'Offline';
+  --subtitle-color: rgba(255, 255, 255, 0.8);
+  --subtitle-size: 22px;
+  --spacing: 6px;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat/Montserrat-Regular.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: 'Montserrat';
+  src: url('/fonts/Montserrat/Montserrat-SemiBold.woff2') format('woff2');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body {
+  width: var(--size);
+  height: var(--size);
+  overflow: hidden;
+  font-family: 'Montserrat';
+}
+
+.container {
+  width: 100%;
+  height: 100%;
+  position: relative;
+  background-size: cover;
+  background-image: var(--image);
+}
+
+.container::before {
+  content: '';
+  position: absolute;
+  background-color: rgba(0, 0, 0, 0.8);
+  width: 100%;
+  height: 100%;
+  -webkit-backdrop-filter: blur(5px);
+  backdrop-filter: blur(5px);
+  pointer-events: none;
+}
+
+.wrapper {
+  padding: 25px;
+  position: absolute;
+  height: calc(100% - 2 * var(--padding));
+  width: calc(100% - 2 * var(--padding));
+}
+
+.image {
+  width: calc(var(--image-relative-scale) * var(--size));
+  height: calc(var(--image-relative-scale) * var(--size));
+  background-size: cover;
+  background-image: var(--image);
+  margin-bottom: var(--spacing);
+}
+
+.title,
+.subtitle {
+  width: 75%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.title::before {
+  content: var(--title);
+}
+
+.title {
+  font-size: var(--title-size);
+  color: var(--title-color);
+  margin-bottom: var(--spacing);
+  font-weight: 600;
+}
+
+.subtitle::before {
+  content: var(--subtitle);
+}
+
+.subtitle {
+  font-size: var(--subtitle-size);
+  color: var(--subtitle-color);
+  width: 60%;
+}

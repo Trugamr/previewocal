@@ -1,50 +1,90 @@
-import Blur from './blur'
 import { chromium } from 'playwright'
+import axios from 'axios'
+import {
+  GenerateGenericImage,
+  PageEvaluator,
+  SpotifyTrackOptions,
+  SpotifyTrackTemplate,
+} from './types'
 
-const screenshotOptions: ScreenshotOptions = {
-  type: 'jpeg',
-  quality: 100,
-  omitBackground: true,
+const Blur: SpotifyTrackTemplate = {
+  path: 'templates/blur/index.html',
+  type: 'spotify-track',
 }
 
-interface GenerateImageOptions {
-  html: string
-  elementToCapture?: string
-}
+const _generateGenericImage: GenerateGenericImage = async ({
+  evaluator,
+  url,
+}) => {
+  const browser = await chromium.launch({ headless: true })
+  const context = await browser.newContext()
+  const page = await context.newPage()
+  await page.goto(url)
 
-export const generateImage = async <T>(
-  options: GenerateImageOptions,
-): Promise<Buffer> => {
-  const { html, elementToCapture } = options
-  const elementSelector = elementToCapture ?? '.container'
+  if (evaluator) await evaluator(page, context)
 
-  console.time('done')
-
-  const browser = await chromium.launch({
-    headless: true,
-  })
-
-  const page = await browser.newPage()
-
-  await page.setContent(html)
-  const element = await page.$(elementSelector)
-
+  const element = await page.$('.container')
   let image: Buffer
-  if (element) {
-    image = await element.screenshot(screenshotOptions)
-  } else {
-    image = await page.screenshot(screenshotOptions)
-  }
+  if (element) image = await element.screenshot()
+  else image = await page.screenshot()
 
   await browser.close()
+  return image
+}
 
-  console.timeEnd('done')
+const imageToBase64 = async (url: string) => {
+  const { data, headers } = await axios.get(url, {
+    responseType: 'arraybuffer',
+  })
+
+  const base64 = `data:${headers[
+    'content-type'
+  ].toLowerCase()};base64,${Buffer.from(data, 'binary').toString('base64')}`
+
+  return base64
+}
+
+export const generateSpotifyTrackImage = async ({
+  template,
+  options,
+}: {
+  template: SpotifyTrackTemplate
+  options: SpotifyTrackOptions
+}): Promise<Buffer> => {
+  const evaluator: PageEvaluator = async page => {
+    // Convert image to base64 string
+    const image = await imageToBase64(options.image)
+    options.image = image
+
+    await page.$eval(
+      ':root',
+      (root, { image, title, subtitle }) => {
+        root.style.setProperty('--title', `"${title}"`)
+        root.style.setProperty('--subtitle', `"${subtitle}"`)
+        root.style.setProperty('--image', `url(${image})`)
+      },
+      options,
+    )
+  }
+
+  const image = await _generateGenericImage({
+    url: `${options.host}/${template.path}`,
+    evaluator,
+  })
 
   return image
 }
 
+// export const generateImage: GenerateImage = ({options, template}) => {
+// if(options.tr)
+// }
+
 const Templates = {
-  Blur,
+  Spotify: {
+    Track: {
+      Blur,
+    },
+  },
 }
 
 export default Templates

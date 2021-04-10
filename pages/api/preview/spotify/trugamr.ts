@@ -1,44 +1,72 @@
 import axios from 'axios'
 import { NextApiRequest, NextApiResponse } from 'next'
-import nc from 'next-connect'
-import Templates, { generateImage } from '../../../../lib/templates'
+import absoluteUrl from 'next-absolute-url'
+import nc, { Middleware } from 'next-connect'
+import Templates, { generateSpotifyTrackImage } from '../../../../lib/templates'
 
-const handler = nc<NextApiRequest, NextApiResponse>().get(async (req, res) => {
-  const {
-    data: { data: trackData },
-  } = await axios.get<{
-    data:
-      | { isOffline: true }
-      | {
-          isOffline: false
-          name: string
-          images: { url: string }[]
-          artists: { name: string }[]
-        }
-  }>('https://trugamr.codes/api/spotify')
+interface ExtendedNextApiRequest extends NextApiRequest {
+  protocol: string
+  host: string
+  origin: string
+}
 
-  const data = {
-    image: 'https://i.imgur.com/t0L63tY.jpeg',
-    title: 'Error 🌊🌸',
-    subtitle: 'Offline',
-  }
+const injectOrigin: Middleware<ExtendedNextApiRequest, NextApiResponse> = (
+  req,
+  res,
+  next,
+) => {
+  const { protocol, host, origin } = absoluteUrl(req)
 
-  if (trackData.isOffline === false) {
-    data.image = trackData.images[0].url
-    data.title = trackData.name
-    data.subtitle = trackData.artists.map(({ name }) => name).join(', ')
-  }
+  req.protocol = protocol
+  req.host = host
+  req.origin = origin
 
-  const html = await Templates.Blur(data)
-  const buffer = await generateImage({ html })
+  next()
+}
 
-  // Let client know it's a JPEG
-  res.setHeader('Cache-Control', 'private')
-  res.setHeader('Content-Type', 'image/jpg')
-  res.setHeader('Content-Disposition', 'inline')
+const handler = nc<ExtendedNextApiRequest, NextApiResponse>()
+  // .use(injectOrigin)
+  .get(async (req, res) => {
+    const {
+      data: { data: trackData },
+    } = await axios.get<{
+      data:
+        | { isOffline: true }
+        | {
+            isOffline: false
+            name: string
+            images: { url: string }[]
+            artists: { name: string }[]
+          }
+    }>('https://trugamr.codes/api/spotify')
 
-  // Send image buffer
-  res.send(buffer)
-})
+    const data = {
+      image: 'https://i.imgur.com/t0L63tY.jpeg',
+      title: 'Error 🌊🌸',
+      subtitle: 'Offline',
+    }
+
+    if (trackData.isOffline === false) {
+      data.image = trackData.images[0].url
+      data.title = trackData.name
+      data.subtitle = trackData.artists.map(({ name }) => name).join(', ')
+    }
+
+    const buffer = await generateSpotifyTrackImage({
+      template: Templates.Spotify.Track.Blur,
+      options: {
+        host: absoluteUrl(req).host,
+        ...data,
+      },
+    })
+
+    // Let client know it's a JPEG
+    res.setHeader('Cache-Control', 'private')
+    res.setHeader('Content-Type', 'image/jpg')
+    res.setHeader('Content-Disposition', 'inline')
+
+    // Send image buffer
+    res.send(buffer)
+  })
 
 export default handler
