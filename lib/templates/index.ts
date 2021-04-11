@@ -16,6 +16,9 @@ const getBrowser = async (): Promise<Browser> => {
   if (process.env.AWS_LAMBDA_FUNCTION_VERSION) {
     // running on the Vercel platform.
     const chromium = require('chrome-aws-lambda')
+    await chromium.font(
+      'https://raw.githack.com/googlei18n/noto-emoji/master/fonts/NotoColorEmoji.ttf',
+    )
     const browser: Promise<Browser> = chromium.puppeteer.launch({
       args: [...chromium.args, '--hide-scrollbars', '--disable-web-security'],
       defaultViewport: chromium.defaultViewport,
